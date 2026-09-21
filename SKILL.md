@@ -1,6 +1,6 @@
 ---
 name: pixelmator
-description: Build logos, icons and simple graphics live inside Pixelmator Pro on this Mac from a JSON spec (shapes, text, colors, strokes), then export PNG/JPG/SVG/PDF/PXD and verify the result. Use when the user asks to make, draw, design or recreate a logo, icon, badge or wordmark "in Pixelmator", wants to watch it being built in the app, or wants to run AppleScript against Pixelmator Pro with readable errors.
+description: Build logos, icons, simple graphics and shape-layer paintings of any photo live inside Pixelmator Pro on this Mac from a JSON spec (shapes, text, colors, strokes), then export PNG/JPG/SVG/PDF/PXD and verify the result. Use when the user asks to make, draw, design or recreate a logo, icon, badge or wordmark "in Pixelmator", wants to watch it being built in the app, or wants to run AppleScript against Pixelmator Pro with readable errors.
 ---
 
 # pixelmator
@@ -17,6 +17,7 @@ python3 $PXM logo spec.json              # build it on screen, leave the documen
 python3 $PXM logo spec.json --headless   # same build in the background, document closed after export
 python3 $PXM logo spec.json --gif ~/Downloads/build.gif   # plus a 2 second GIF of it being built, layer by layer
 python3 $PXM logo spec.json --dry-run    # print the AppleScript only
+python3 $PXM paint photo.jpg --out ~/Downloads/painting.png --shapes 3000   # rebuild any image from shape layers
 python3 $PXM run script.applescript      # anything the spec can't do, with decoded errors
 ```
 
@@ -53,6 +54,20 @@ python3 $PXM run script.applescript      # anything the spec can't do, with deco
 - Colors are `#RRGGBB`. Export format comes from the extension: png jpg tiff heic webp svg pdf psd pxd.
 - Fonts: PostScript names are safest (`HelveticaNeue-Bold`). An unknown font fails the run. Pixelmator would have swapped in Helvetica without a word.
 
+## Paint
+
+`paint` turns any image into thousands of flat shape layers. No LLM is involved and no tokens are spent while it builds. It is a quadtree: start with one rectangle in the average color, split the cell with the most color error into four, repeat until the layer budget is gone. Detail lands where the picture needs it. Parents stay under their children, so the picture sharpens as it builds.
+
+```bash
+python3 $PXM paint mona.jpg --out mona.png --shapes 3000 --headless --gif mona.gif
+```
+
+- `--shapes` is the layer budget (default 2000). `--detail` is the sampling grid (default 256). `--size` is the canvas. `--shape ellipse` gives a pointillist look.
+- `--out` repeats: `--out a.png --out a.pxd`.
+- Speed: about 10 layers a second, slower as the document fills. 3000 layers is roughly ten minutes. Start it with `run_in_background` and wait for the notification. Do not poll.
+- The GIF takes about 60 frames however many layers there are.
+- Reference images must be yours or public domain.
+
 ## Text on a curve
 
 ```bash
@@ -85,6 +100,7 @@ All from `cutout` ops. Real examples sit in `examples/`.
 - Shape geometry (corner radius, sides, star points) is read-only after `make`.
 - Exporting into a folder that does not exist fails with -100. The script makes folders first.
 - GIFs of flat logos: no dithering, one palette for the whole clip. Dithering is what makes text look dirty.
+- Shapes with a numeric `x` and `y` are placed inside `make`, not with a second `set position`. One less round-trip per layer. Give numbers when you have them.
 - A headless build takes about six seconds. So iterate: build, Read the PNG, fix the spec, build again.
 - Run `uvx ruff check .` and the tests before pushing. CI will fail the push otherwise.
 

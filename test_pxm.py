@@ -153,7 +153,7 @@ class ScriptBuilding(unittest.TestCase):
                                      "radius": 50, "fill": "#0000FF", "x": 10, "y": 20.5,
                                      "rotation": 45, "opacity": 80, "name": "Spark"}])
         for want in ("make new star shape layer", "star points:5", "star radius:50",
-                     "fill color of styles of L to {0, 0, 65535}", "set position of L to {10, 20.5}",
+                     "fill color of styles of L to {0, 0, 65535}", "position:{10, 20.5}, width:40",
                      "set rotation of L to 45", "set opacity of L to 80", 'set name of L to "Spark"',
                      'error "layer 0 (star): " & m number n'):
             self.assertIn(want, script)
@@ -232,6 +232,25 @@ class ScriptBuilding(unittest.TestCase):
         for name in names:
             with self.subTest(example=name), open(os.path.join(folder, name)) as f:
                 self.assertIn("make new document", pxm.build_script(pxm.validate_spec(json.load(f))))
+
+
+class Paint(unittest.TestCase):
+    def test_quadtree_spends_its_layers_where_the_detail_is(self):
+        # Left half flat black, right half a checkerboard.
+        rows = [[(0, 0, 0)] * 8 + [((x + y) % 2 * 255,) * 3 for x in range(8)] for y in range(16)]
+        layers = pxm.paint_layers(16, 16, rows, 41, 10)
+        self.assertEqual(len(layers), 41)
+        self.assertEqual(layers[0], {"type": "rectangle", "x": 0, "y": 0, "width": 160,
+                                     "height": 160, "fill": "#404040"})
+        small = [L for L in layers if L["width"] <= 20]
+        self.assertTrue(small and all(L["x"] >= 80 for L in small))
+        pxm.validate_spec({"width": 160, "height": 160, "layers": layers})
+
+    def test_frames_are_thinned_but_the_last_layer_always_gets_one(self):
+        layers = [{"type": "rectangle", "width": 5, "height": 5, "fill": "#000"}] * 7
+        script = pxm.build_script(pxm.validate_spec({"width": 9, "height": 9, "layers": layers}),
+                                  frames_dir="/f", frame_every=3)
+        self.assertEqual(re.findall(r"frame-(\d+)", script), ["000", "001", "002"])
 
 
 class ArcText(unittest.TestCase):

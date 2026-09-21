@@ -15,6 +15,18 @@ They are approximations made from ovals and rectangles, shown to demonstrate the
 
 ![Build GIF](examples/out/nvidia.gif)
 
+## It paints too
+
+![The Mona Lisa assembling from 3000 rectangles inside Pixelmator Pro](examples/out/mona-lisa.gif)
+
+That is the Mona Lisa, built inside Pixelmator Pro from 3000 rectangles. Every one is a real layer.
+No model draws it. Start with one rectangle in the average color. Find the cell that is most wrong. Split it in four. Repeat.
+The face gets thousands of tiny layers. The background gets a handful.
+
+```bash
+python3 pxm.py paint photo.jpg --out painting.png --shapes 3000 --gif build.gif
+```
+
 ## Use it
 
 ```bash
@@ -33,6 +45,7 @@ As a Claude skill: symlink this folder to `~/.claude/skills/pixelmator`. `SKILL.
 - Shapes, text, strokes, rotation, opacity, center anchoring for text on a curve.
 - `cutout` layers: curves without a pen tool. Add, subtract and intersect ovals, get one vector shape.
 - Export to png, jpg, svg, pdf, psd, pxd and more.
+- `paint`: any image rebuilt from thousands of shape layers.
 - Headless mode. Build GIFs.
 
 ## When things go wrong

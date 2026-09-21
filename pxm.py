@@ -7,6 +7,7 @@ Stdlib only. Runs on the system python3 (3.9+).
     pxm.py logo spec.json           build the logo inside the app, export, verify
     pxm.py logo spec.json --dry-run print the AppleScript, touch nothing
     pxm.py logo spec.json --headless same build, app stays in the background
+    pxm.py paint photo.jpg --out a.png   rebuild any image from thousands of shape layers
     pxm.py run script.applescript   run raw AppleScript with decoded errors
 """
 import argparse
@@ -297,11 +298,12 @@ def _n(v):
     return repr(round(float(v), 3)) if not float(v).is_integer() else str(int(v))
 
 
-def build_script(spec, timeout=120, headless=False, frames_dir=None):
+def build_script(spec, timeout=120, headless=False, frames_dir=None, frame_every=1):
     """Normalized spec -> AppleScript. Layers are listed bottom to top.
 
     headless: never bring the app forward, always close the document after export.
-    frames_dir: also export frame-000.png, frame-001.png... there, one after every layer.
+    frames_dir: also export frame-000.png, frame-001.png... there, one after every
+    `frame_every` layers, and always one after the last.
     """
     W, H = spec["width"], spec["height"]
     layers = list(spec["layers"])
@@ -336,7 +338,11 @@ def build_script(spec, timeout=120, headless=False, frames_dir=None):
                     "" if j == 0 else " mode " + OPS[op["op"]]))
             b += ["convert selection into shape", "set L to current layer", "deselect"]
         else:
-            props = ["position:{0, 0}", "width:%s" % _n(L["width"]), "height:%s" % _n(L["height"])]
+            # Numeric x and y go straight into make: one less round-trip per layer.
+            placed = all(_is_num(L.get(k)) for k in ("x", "y")) and L.get("cx") is None \
+                and L.get("cy") is None
+            props = ["position:{%s, %s}" % ((_n(L["x"]), _n(L["y"])) if placed else (0, 0)),
+                     "width:%s" % _n(L["width"]), "height:%s" % _n(L["height"])]
             for key, term in (("corner_radius", "corner radius"), ("sides", "sides"),
                               ("points", "star points"), ("radius", "star radius")):
                 if L.get(key) is not None:
@@ -361,7 +367,9 @@ def build_script(spec, timeout=120, headless=False, frames_dir=None):
             x = "%s - (width of L) / 2" % _n(L["cx"])
         if L.get("cy") is not None:
             y = "%s - (height of L) / 2" % _n(L["cy"])
-        if L["type"] != "cutout" or any(L.get(k) is not None for k in ("x", "y", "cx", "cy")):
+        if L["type"] in SHAPES and placed:
+            pass
+        elif L["type"] != "cutout" or any(L.get(k) is not None for k in ("x", "y", "cx", "cy")):
             b.append("set position of L to {%s, %s}" % (x, y))
         if L.get("rotation"):
             b.append("set rotation of L to %s" % _n(L["rotation"]))
@@ -372,9 +380,10 @@ def build_script(spec, timeout=120, headless=False, frames_dir=None):
             # A new document arrives with one blank image layer. Drop it so PNGs keep alpha.
             # It can only go once another layer exists.
             b.append("delete last layer")
-        if frames_dir:
+        if frames_dir and (i % frame_every == 0 or i == len(layers) - 1):
             b.append("export d to (POSIX file %s) as PNG"
-                     % as_string(os.path.join(frames_dir, "frame-%03d.png" % i)))
+                     % as_string(os.path.join(frames_dir, "frame-%03d.png" % (i // frame_every
+                                 + (1 if i % frame_every else 0)))))
         body += ["\t\t" + line for line in b]
 
     exports = ["\t\texport d to (POSIX file %s) as %s"
@@ -502,6 +511,88 @@ def make_gif(frames_dir, out_path, width, height, seconds=2.0):
                        code=EXIT_VERIFY)
 
 
+# ---------- paint: any image -> shape layers ----------
+
+def read_pixels(path, side=256):
+    """Image file -> (w, h, rows of (r, g, b)), longest side scaled to `side`.
+
+    sips does the decoding, so this stays stdlib only. A 24-bit BMP is trivial to parse.
+    """
+    fd, bmp = tempfile.mkstemp(suffix=".bmp")
+    os.close(fd)
+    try:
+        p = subprocess.run(["sips", "-s", "format", "bmp", "-Z", str(side), path, "--out", bmp],
+                           text=True, capture_output=True)
+        data = open(bmp, "rb").read()
+    finally:
+        os.unlink(bmp)
+    if p.returncode != 0 or data[:2] != b"BM":
+        raise PxmError("sips could not read %s" % path, hint=p.stderr.strip()[-200:],
+                       code=EXIT_USAGE)
+    start, w, h, bpp = (int.from_bytes(data[a:b], "little", signed=True)
+                        for a, b in ((10, 14), (18, 22), (22, 26), (28, 30)))
+    if bpp not in (24, 32):
+        raise PxmError("unexpected BMP depth %d from sips" % bpp, code=EXIT_USAGE)
+    step, stride = bpp // 8, (w * bpp + 31) // 32 * 4
+    rows = []
+    for y in range(abs(h)):
+        o = start + y * stride
+        rows.append([(data[o + x * step + 2], data[o + x * step + 1], data[o + x * step])
+                     for x in range(w)])
+    if h > 0:  # positive height means bottom-up
+        rows.reverse()
+    return w, abs(h), rows
+
+
+def paint_layers(w, h, rows, shapes, scale, shape="rectangle"):
+    """Quadtree the image: always split the cell with the most color error.
+
+    Every node is a layer, parents under children, so the picture sharpens as it builds
+    and no hairline gaps show between tiles. Returns logo-spec layers, bottom to top.
+    """
+    import heapq
+    # Summed-area tables of r, g, b and r2+g2+b2: mean and error of any cell in O(1).
+    S = [[(0, 0, 0, 0)] * (w + 1)]
+    for y in range(h):
+        acc, line, up = (0, 0, 0, 0), [(0, 0, 0, 0)], S[y]
+        for x in range(w):
+            r, g, b = rows[y][x]
+            acc = (acc[0] + r, acc[1] + g, acc[2] + b, acc[3] + r * r + g * g + b * b)
+            line.append(tuple(acc[k] + up[x + 1][k] for k in range(4)))
+        S.append(line)
+
+    def cell(x0, y0, x1, y1):
+        n = (x1 - x0) * (y1 - y0)
+        r, g, b, sq = (S[y1][x1][k] - S[y0][x1][k] - S[y1][x0][k] + S[y0][x0][k] for k in range(4))
+        err = sq - (r * r + g * g + b * b) / n  # sum of squared distance from the mean
+        return err, "#%02X%02X%02X" % (round(r / n), round(g / n), round(b / n))
+
+    def layer(x0, y0, x1, y1, fill):
+        return {"type": shape, "x": x0 * scale, "y": y0 * scale,
+                "width": (x1 - x0) * scale, "height": (y1 - y0) * scale, "fill": fill}
+
+    def near(a, b):  # two fills the eye cannot tell apart
+        return all(abs(int(a[i:i + 2], 16) - int(b[i:i + 2], 16)) < 6 for i in (1, 3, 5))
+
+    err, fill = cell(0, 0, w, h)
+    out, heap = [layer(0, 0, w, h, fill)], [(-err, 0, 0, w, h, fill)]
+    while heap and len(out) + 4 <= shapes:
+        _, x0, y0, x1, y1, under = heapq.heappop(heap)
+        mx, my = (x0 + x1) // 2, (y0 + y1) // 2
+        for a, b, c, d in ((x0, y0, mx, my), (mx, y0, x1, my), (x0, my, mx, y1), (mx, my, x1, y1)):
+            if c > a and d > b:
+                err, fill = cell(a, b, c, d)
+                # A child the same color as what already shows through is a wasted layer.
+                # Skip it, keep splitting it. The budget goes to layers that change the picture.
+                if near(fill, under):
+                    fill = under
+                else:
+                    out.append(layer(a, b, c, d, fill))
+                if c - a > 1 and d - b > 1:
+                    heapq.heappush(heap, (-err, a, b, c, d, fill))
+    return out
+
+
 # ---------- commands ----------
 
 def cmd_check(_args):
@@ -525,13 +616,30 @@ def cmd_run(args):
 
 def cmd_logo(args):
     with open(args.spec) as f:
-        spec = validate_spec(json.load(f))
+        build(validate_spec(json.load(f)), args)
+
+
+def cmd_paint(args):
+    if not 5 <= args.shapes <= 20000:
+        raise PxmError("--shapes must be from 5 to 20000", code=EXIT_USAGE)
+    w, h, rows = read_pixels(os.path.expanduser(args.image), side=args.detail)
+    scale = max(1, round(args.size / max(w, h)))
+    layers = paint_layers(w, h, rows, args.shapes, scale, args.shape)
+    # ponytail: every layer costs about 50 ms in the app. Thousands take minutes.
+    args.timeout = max(args.timeout, len(layers) // 4 + 120)
+    build(validate_spec({"width": w * scale, "height": h * scale, "layers": layers,
+                         "export": args.out, "keep_open": True}), args,
+          frame_every=max(1, len(layers) // 60))
+
+
+def build(spec, args, frame_every=1):
     if args.gif and not args.gif.lower().endswith(".gif"):
         raise PxmError("--gif path must end in .gif", code=EXIT_USAGE)
     frames_dir = tempfile.mkdtemp(prefix="pxm-frames-") if args.gif and not args.dry_run else None
     try:
         script = build_script(spec, timeout=args.timeout, headless=args.headless,
-                              frames_dir=frames_dir or ("/tmp/frames" if args.gif else None))
+                              frames_dir=frames_dir or ("/tmp/frames" if args.gif else None),
+                              frame_every=frame_every)
         if args.dry_run:
             print(script, end="")
             return
@@ -568,6 +676,20 @@ def main(argv=None):
     g.add_argument("--gif", metavar="PATH", help="also write a short GIF of the build (needs ffmpeg)")
     g.add_argument("--timeout", type=int, default=120)
     g.set_defaults(fn=cmd_logo)
+    p = sub.add_parser("paint", help="rebuild any image out of shape layers")
+    p.add_argument("image")
+    p.add_argument("--out", action="append", required=True, metavar="PATH",
+                   help="export path, repeatable (png, svg, pxd...)")
+    p.add_argument("--shapes", type=int, default=2000, help="layer budget (default 2000)")
+    p.add_argument("--shape", choices=("rectangle", "ellipse"), default="rectangle")
+    p.add_argument("--detail", type=int, default=256,
+                   help="longest side of the grid the image is sampled on (default 256)")
+    p.add_argument("--size", type=int, default=2048, help="longest side of the canvas, roughly")
+    p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--headless", action="store_true")
+    p.add_argument("--gif", metavar="PATH")
+    p.add_argument("--timeout", type=int, default=120)
+    p.set_defaults(fn=cmd_paint)
     args = ap.parse_args(argv)
     try:
         args.fn(args)

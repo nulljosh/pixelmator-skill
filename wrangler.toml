@@ -1,0 +1,11 @@
+name = "pixelmator-skill"
+compatibility_date = "2025-07-01"
+
+workers_dev = false
+routes = [{ pattern = "pixelmator.heyitsmejosh.com", custom_domain = true }]
+
+[assets]
+directory = "landing"
+
+[observability]
+enabled = true
