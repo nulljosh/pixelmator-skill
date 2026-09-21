@@ -53,6 +53,41 @@ python3 $PXM run script.applescript      # anything the spec can't do, with deco
 - Colors are `#RRGGBB`. Export format comes from the extension: png jpg tiff heic webp svg pdf psd pxd.
 - Fonts: PostScript names are safest (`HelveticaNeue-Bold`). An unknown font fails the run. Pixelmator would have swapped in Helvetica without a word.
 
+## Text on a curve
+
+```bash
+python3 ~/.claude/skills/pixelmator/arc_text.py "Great Service" --font Palatino-Bold --size 88 \
+    --cx 1024 --cy 414 --a 1000 --b 344 > letters.json
+```
+
+It measures each letter in the real app, spaces them by arc length along the top of the ellipse, tilts each to the tangent, and prints layers to paste into the spec. `--offset` slides the text along the arc.
+
+## Shape recipes
+
+All from `cutout` ops. Real examples sit in `examples/`.
+
+- Crescent or swoosh: oval, subtract a shifted oval, then `rotation` (nike.json).
+- Leaf or almond eye: two big circles intersected (apple.json, nvidia.json).
+- Ring: oval, subtract a smaller oval. Or stack a white oval on a colored one.
+- Arch: tall oval ring, intersect a rectangle to cut it off flat (mcdonalds.json).
+- Bite: subtract a circle from the edge (apple.json).
+- Two-tone split: build the shape twice, each intersected with a rectangle on one side (nvidia.json).
+- Overlap color: intersect the two circles as a third layer (mastercard.json).
+
+## Learned the hard way
+
+- Rotation is counterclockwise. Get it backwards on curved text and every letter leans the wrong way. It reads as "crooked", not as "rotated wrong".
+- Judge text from a zoomed crop, never the whole image. `ffmpeg -i logo.png -vf crop=1000:230:300:20 crop.png`, then Read it.
+- Compare against the reference side by side before calling a recreation done. Fix the biggest visible difference first.
+- A text box is wider than its letters by a fixed padding. Measure, never guess widths.
+- Unknown fonts fall back to Helvetica with no error. The verify step catches it. Use PostScript names.
+- A new document holds one blank layer. It can only be deleted after another layer exists. The script handles it.
+- Shape geometry (corner radius, sides, star points) is read-only after `make`.
+- Exporting into a folder that does not exist fails with -100. The script makes folders first.
+- GIFs of flat logos: no dithering, one palette for the whole clip. Dithering is what makes text look dirty.
+- A headless build takes about six seconds. So iterate: build, Read the PNG, fix the spec, build again.
+- Run `uvx ruff check .` and the tests before pushing. CI will fail the push otherwise.
+
 ## Exit codes
 
 | Code | Meaning | Do this |

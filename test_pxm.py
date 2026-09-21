@@ -14,6 +14,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+import arc_text
 import pxm
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -231,6 +232,19 @@ class ScriptBuilding(unittest.TestCase):
         for name in names:
             with self.subTest(example=name), open(os.path.join(folder, name)) as f:
                 self.assertIn("make new document", pxm.build_script(pxm.validate_spec(json.load(f))))
+
+
+class ArcText(unittest.TestCase):
+    def test_letters_mirror_around_the_top_and_tilt_with_the_curve(self):
+        layers = arc_text.layout("AA AA", {"A": 50, " ": 25}, 100, 500, 400, 450, 300)
+        self.assertEqual(len(layers), 4)                       # the space makes no layer
+        first, last = layers[0], layers[-1]
+        self.assertAlmostEqual(first["cx"] + last["cx"], 1000, delta=0.2)
+        self.assertAlmostEqual(first["cy"], last["cy"], delta=0.2)
+        self.assertLess(first["rotation"], 90)                 # left side: counterclockwise tilt
+        self.assertGreater(last["rotation"], 270)              # right side: clockwise tilt
+        self.assertAlmostEqual(first["rotation"] + last["rotation"], 360, delta=0.2)
+        pxm.validate_spec({"width": 1000, "height": 800, "layers": layers})
 
 
 class ErrorParsing(unittest.TestCase):
