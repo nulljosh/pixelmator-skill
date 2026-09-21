@@ -47,7 +47,7 @@ python3 $PXM run script.applescript      # anything the spec can't do, with deco
 - Layer types: `rectangle`, `rounded_rectangle` (`corner_radius`), `ellipse`, `polygon` (`sides` 3-11),
   `star` (`points` 3-20, `radius` 10-100), `line`, `text` (`text`, `font`, `size`, `color`).
 - `cutout` draws curves without a pen tool. `ops` is a list of ovals and rectangles (`shape`: `ellipse` or `rectangle`, whole-pixel `x`, `y`, `width`, `height` in canvas coordinates) combined with `op`: `add`, `subtract` or `intersect`. The result becomes one vector shape. A crescent is an oval minus an oval. A leaf is two circles intersected. See `examples/apple.json`, `nike.json`, `nvidia.json`.
-- Every layer takes `x`, `y` (top-left corner in pixels, or `"center"`, the default), `name`, `opacity` 0-100, `rotation` 0-359.
+- Every layer takes `x`, `y` (top-left corner in pixels, or `"center"`, the default), `name`, `opacity` 0-100, `rotation` 0-359.9 in degrees, counterclockwise (so 350 tilts a layer 10 degrees clockwise).
 - `cx`, `cy` place a layer by its center instead. Use them for text, whose size is only known inside the app. Text on a curve is one text layer per letter, each with `cx`, `cy` and `rotation`.
 - Shapes take `width`, `height`, `fill`, `stroke`, `stroke_width`. No fill means outline only.
 - Colors are `#RRGGBB`. Export format comes from the extension: png jpg tiff heic webp svg pdf psd pxd.

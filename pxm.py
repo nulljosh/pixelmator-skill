@@ -201,7 +201,7 @@ def validate_spec(spec):
             "cx": num(raw, "cx", where, -MAX_SIDE, MAX_SIDE * 2),
             "cy": num(raw, "cy", where, -MAX_SIDE, MAX_SIDE * 2),
             "opacity": num(raw, "opacity", where, 0, 100, integer=True),
-            "rotation": num(raw, "rotation", where, 0, 359),
+            "rotation": num(raw, "rotation", where, 0, 359.999),  # counterclockwise, like the app
         }
         for a, b in (("x", "cx"), ("y", "cy")):
             if a in raw and b in raw:
