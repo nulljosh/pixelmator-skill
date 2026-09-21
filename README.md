@@ -1,5 +1,7 @@
 # pixelmator-skill
 
+**Moved.** This now lives inside Samantha, our own assistant: [turing/pixelmator](https://github.com/nulljosh/turing/tree/main/pixelmator). See her paint at [turing.heyitsmejosh.com/paint](https://turing.heyitsmejosh.com/paint/). This repo stays as a snapshot.
+
 ![license](https://img.shields.io/badge/license-MIT-green) ![tests](https://github.com/nulljosh/pixelmator-skill/actions/workflows/test.yml/badge.svg)
 
 Describe a logo. Watch Pixelmator Pro build it, layer by layer.
