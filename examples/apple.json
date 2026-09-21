@@ -1,0 +1,73 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#FFFFFF",
+ "keep_open": false,
+ "export": [
+  "examples/out/apple.png"
+ ],
+ "layers": [
+  {
+   "type": "cutout",
+   "name": "Body",
+   "fill": "#000000",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 250,
+     "y": 310,
+     "width": 310,
+     "height": 590
+    },
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 464,
+     "y": 310,
+     "width": 310,
+     "height": 590
+    },
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 372,
+     "y": 384,
+     "width": 280,
+     "height": 470
+    },
+    {
+     "op": "subtract",
+     "shape": "ellipse",
+     "x": 700,
+     "y": 430,
+     "width": 250,
+     "height": 250
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Leaf",
+   "fill": "#000000",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 517,
+     "y": 110,
+     "width": 300,
+     "height": 300
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 363,
+     "y": -10,
+     "width": 300,
+     "height": 300
+    }
+   ]
+  }
+ ]
+}

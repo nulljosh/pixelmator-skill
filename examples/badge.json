@@ -1,0 +1,45 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "layers": [
+  {
+   "type": "rounded_rectangle",
+   "name": "Tile",
+   "width": 880,
+   "height": 880,
+   "corner_radius": 200,
+   "fill": "#14181F"
+  },
+  {
+   "type": "ellipse",
+   "name": "Ring",
+   "width": 640,
+   "height": 640,
+   "stroke": "#F2B33D",
+   "stroke_width": 28
+  },
+  {
+   "type": "star",
+   "name": "Spark",
+   "x": 662,
+   "y": 210,
+   "width": 150,
+   "height": 150,
+   "points": 4,
+   "radius": 35,
+   "fill": "#F2B33D"
+  },
+  {
+   "type": "text",
+   "name": "Mark",
+   "text": "JB",
+   "font": "HelveticaNeue-Bold",
+   "size": 300,
+   "color": "#FFFFFF"
+  }
+ ],
+ "export": [
+  "examples/out/badge.png"
+ ],
+ "keep_open": true
+}

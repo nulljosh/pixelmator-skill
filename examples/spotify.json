@@ -1,0 +1,116 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#FFFFFF",
+ "keep_open": false,
+ "export": [
+  "examples/out/spotify.png"
+ ],
+ "layers": [
+  {
+   "type": "ellipse",
+   "name": "Disc",
+   "x": 112,
+   "y": 112,
+   "width": 800,
+   "height": 800,
+   "fill": "#1DB954"
+  },
+  {
+   "type": "cutout",
+   "name": "Wave 1",
+   "fill": "#191414",
+   "rotation": 354,
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 232,
+     "y": 330,
+     "width": 560,
+     "height": 420
+    },
+    {
+     "op": "subtract",
+     "shape": "ellipse",
+     "x": 222,
+     "y": 392,
+     "width": 580,
+     "height": 420
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 252,
+     "y": 330,
+     "width": 520,
+     "height": 210
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Wave 2",
+   "fill": "#191414",
+   "rotation": 354,
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 272,
+     "y": 465,
+     "width": 480,
+     "height": 360
+    },
+    {
+     "op": "subtract",
+     "shape": "ellipse",
+     "x": 262,
+     "y": 519,
+     "width": 500,
+     "height": 360
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 292,
+     "y": 465,
+     "width": 440,
+     "height": 180
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Wave 3",
+   "fill": "#191414",
+   "rotation": 354,
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 312,
+     "y": 585,
+     "width": 400,
+     "height": 300
+    },
+    {
+     "op": "subtract",
+     "shape": "ellipse",
+     "x": 302,
+     "y": 631,
+     "width": 420,
+     "height": 300
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 332,
+     "y": 585,
+     "width": 360,
+     "height": 150
+    }
+   ]
+  }
+ ]
+}

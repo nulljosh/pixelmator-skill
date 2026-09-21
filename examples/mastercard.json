@@ -1,0 +1,52 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#FFFFFF",
+ "keep_open": false,
+ "export": [
+  "examples/out/mastercard.png"
+ ],
+ "layers": [
+  {
+   "type": "ellipse",
+   "name": "Red",
+   "x": 142,
+   "y": 282,
+   "width": 460,
+   "height": 460,
+   "fill": "#EB001B"
+  },
+  {
+   "type": "ellipse",
+   "name": "Yellow",
+   "x": 422,
+   "y": 282,
+   "width": 460,
+   "height": 460,
+   "fill": "#F79E1B"
+  },
+  {
+   "type": "cutout",
+   "name": "Overlap",
+   "fill": "#FF5F00",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 142,
+     "y": 282,
+     "width": 460,
+     "height": 460
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 422,
+     "y": 282,
+     "width": 460,
+     "height": 460
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,28 @@
+# CI for the pixelmator skill. Runs on every push.
+# GitHub's machines have no Pixelmator Pro, so this proves everything up to the app:
+# spec validation, AppleScript generation, error decoding, exit codes.
+# The app itself is covered by the live tests: PXM_LIVE=1 python3 -m unittest
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]   # macOS also proves the "app not installed" path for real
+        python: ["3.9", "3.13"]             # 3.9 is what ships with macOS
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Lint
+        run: pip install ruff && ruff check .
+      - name: Unit tests
+        run: python -m unittest -v
+      - name: Example spec still compiles to AppleScript
+        run: python pxm.py logo examples/badge.json --dry-run

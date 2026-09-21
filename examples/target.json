@@ -1,0 +1,38 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#FFFFFF",
+ "keep_open": false,
+ "export": [
+  "examples/out/target.png"
+ ],
+ "layers": [
+  {
+   "type": "ellipse",
+   "name": "Outer",
+   "x": 132,
+   "y": 132,
+   "width": 760,
+   "height": 760,
+   "fill": "#CC0000"
+  },
+  {
+   "type": "ellipse",
+   "name": "Gap",
+   "x": 257,
+   "y": 257,
+   "width": 510,
+   "height": 510,
+   "fill": "#FFFFFF"
+  },
+  {
+   "type": "ellipse",
+   "name": "Center",
+   "x": 382,
+   "y": 382,
+   "width": 260,
+   "height": 260,
+   "fill": "#CC0000"
+  }
+ ]
+}

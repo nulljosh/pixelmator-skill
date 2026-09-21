@@ -1,0 +1,47 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#FFFFFF",
+ "keep_open": false,
+ "export": [
+  "examples/out/microsoft.png"
+ ],
+ "layers": [
+  {
+   "type": "rectangle",
+   "name": "Red",
+   "x": 212,
+   "y": 212,
+   "width": 290,
+   "height": 290,
+   "fill": "#F25022"
+  },
+  {
+   "type": "rectangle",
+   "name": "Green",
+   "x": 522,
+   "y": 212,
+   "width": 290,
+   "height": 290,
+   "fill": "#7FBA00"
+  },
+  {
+   "type": "rectangle",
+   "name": "Blue",
+   "x": 212,
+   "y": 522,
+   "width": 290,
+   "height": 290,
+   "fill": "#00A4EF"
+  },
+  {
+   "type": "rectangle",
+   "name": "Yellow",
+   "x": 522,
+   "y": 522,
+   "width": 290,
+   "height": 290,
+   "fill": "#FFB900"
+  }
+ ]
+}

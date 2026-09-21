@@ -1,0 +1,35 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#FFFFFF",
+ "keep_open": false,
+ "export": [
+  "examples/out/nike.png"
+ ],
+ "layers": [
+  {
+   "type": "cutout",
+   "name": "Swoosh",
+   "fill": "#000000",
+   "rotation": 24,
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 110,
+     "y": 380,
+     "width": 820,
+     "height": 330
+    },
+    {
+     "op": "subtract",
+     "shape": "ellipse",
+     "x": 215,
+     "y": 300,
+     "width": 1100,
+     "height": 330
+    }
+   ]
+  }
+ ]
+}

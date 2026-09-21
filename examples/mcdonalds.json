@@ -1,0 +1,73 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#DA291C",
+ "keep_open": false,
+ "export": [
+  "examples/out/mcdonalds.png"
+ ],
+ "layers": [
+  {
+   "type": "cutout",
+   "name": "Left arch",
+   "fill": "#FFC72C",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 154,
+     "y": 180,
+     "width": 400,
+     "height": 1300
+    },
+    {
+     "op": "subtract",
+     "shape": "ellipse",
+     "x": 239,
+     "y": 265,
+     "width": 230,
+     "height": 1300
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 0,
+     "y": 0,
+     "width": 1024,
+     "height": 800
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Right arch",
+   "fill": "#FFC72C",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 470,
+     "y": 180,
+     "width": 400,
+     "height": 1300
+    },
+    {
+     "op": "subtract",
+     "shape": "ellipse",
+     "x": 555,
+     "y": 265,
+     "width": 230,
+     "height": 1300
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 0,
+     "y": 0,
+     "width": 1024,
+     "height": 800
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,39 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#000000",
+ "keep_open": false,
+ "export": [
+  "examples/out/netflix.png"
+ ],
+ "layers": [
+  {
+   "type": "rectangle",
+   "name": "Left",
+   "x": 312,
+   "y": 212,
+   "width": 110,
+   "height": 600,
+   "fill": "#B20710"
+  },
+  {
+   "type": "rectangle",
+   "name": "Right",
+   "x": 602,
+   "y": 212,
+   "width": 110,
+   "height": 600,
+   "fill": "#B20710"
+  },
+  {
+   "type": "rectangle",
+   "name": "Diagonal",
+   "cx": 512,
+   "cy": 512,
+   "width": 112,
+   "height": 672,
+   "fill": "#E50914",
+   "rotation": 26
+  }
+ ]
+}

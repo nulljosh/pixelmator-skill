@@ -1,0 +1,268 @@
+{
+ "width": 1024,
+ "height": 1024,
+ "background": "#FFFFFF",
+ "keep_open": false,
+ "export": [
+  "examples/out/nvidia.png"
+ ],
+ "layers": [
+  {
+   "type": "rectangle",
+   "name": "Block",
+   "x": 430,
+   "y": 232,
+   "width": 470,
+   "height": 560,
+   "fill": "#76B900"
+  },
+  {
+   "type": "cutout",
+   "name": "Eye 0 left",
+   "fill": "#76B900",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 0,
+     "y": 319,
+     "width": 940,
+     "height": 940
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 0,
+     "y": -235,
+     "width": 940,
+     "height": 940
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 0,
+     "y": 0,
+     "width": 430,
+     "height": 1024
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Eye 0 right",
+   "fill": "#FFFFFF",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 0,
+     "y": 319,
+     "width": 940,
+     "height": 940
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 0,
+     "y": -235,
+     "width": 940,
+     "height": 940
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 430,
+     "y": 0,
+     "width": 594,
+     "height": 1024
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Eye 1 left",
+   "fill": "#FFFFFF",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 98,
+     "y": 360,
+     "width": 744,
+     "height": 744
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 98,
+     "y": -80,
+     "width": 744,
+     "height": 744
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 0,
+     "y": 0,
+     "width": 430,
+     "height": 1024
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Eye 1 right",
+   "fill": "#76B900",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 98,
+     "y": 360,
+     "width": 744,
+     "height": 744
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 98,
+     "y": -80,
+     "width": 744,
+     "height": 744
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 430,
+     "y": 0,
+     "width": 594,
+     "height": 1024
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Eye 2 left",
+   "fill": "#76B900",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 202,
+     "y": 404,
+     "width": 536,
+     "height": 536
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 202,
+     "y": 84,
+     "width": 536,
+     "height": 536
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 0,
+     "y": 0,
+     "width": 430,
+     "height": 1024
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Eye 2 right",
+   "fill": "#FFFFFF",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 202,
+     "y": 404,
+     "width": 536,
+     "height": 536
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 202,
+     "y": 84,
+     "width": 536,
+     "height": 536
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 430,
+     "y": 0,
+     "width": 594,
+     "height": 1024
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Eye 3 left",
+   "fill": "#FFFFFF",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 306,
+     "y": 448,
+     "width": 328,
+     "height": 328
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 306,
+     "y": 248,
+     "width": 328,
+     "height": 328
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 0,
+     "y": 0,
+     "width": 430,
+     "height": 1024
+    }
+   ]
+  },
+  {
+   "type": "cutout",
+   "name": "Eye 3 right",
+   "fill": "#76B900",
+   "ops": [
+    {
+     "op": "add",
+     "shape": "ellipse",
+     "x": 306,
+     "y": 448,
+     "width": 328,
+     "height": 328
+    },
+    {
+     "op": "intersect",
+     "shape": "ellipse",
+     "x": 306,
+     "y": 248,
+     "width": 328,
+     "height": 328
+    },
+    {
+     "op": "intersect",
+     "shape": "rectangle",
+     "x": 430,
+     "y": 0,
+     "width": 594,
+     "height": 1024
+    }
+   ]
+  }
+ ]
+}
